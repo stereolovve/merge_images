@@ -16,13 +16,25 @@ pip install Pillow flet
 
 ## Uso
 
-Execute o script informando o caminho do arquivo de saída e as quatro imagens de entrada:
+### Mesclar imagens manualmente
+
+Execute o script `merge_images.py` informando o caminho do arquivo de saída e as quatro imagens de entrada:
 
 ```bash
 python merge_images.py mosaico.jpg imagem1.jpg imagem2.jpg imagem3.jpg imagem4.jpg
 ```
 
 O arquivo `mosaico.jpg` será gerado contendo as quatro imagens dispostas em formato 2x2.
+
+### Gerar mosaico a partir de uma pasta
+
+Para criar o mosaico automaticamente de um ponto específico, informe a pasta com as imagens e o nome do ponto (prefixo dos arquivos). Por exemplo:
+
+```bash
+python merge_images_from_folder.py ./imagens "Ponto 001"
+```
+
+O resultado será salvo na mesma pasta com o nome `mosaico_Ponto_001.jpg`.
 
 ## Interface gráfica
 
