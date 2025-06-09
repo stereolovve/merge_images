@@ -1,12 +1,13 @@
 import os
-from typing import List
+from typing import List, Dict
 from PIL import Image
-import flet as ft
+import re
 
 
 def merge_images(output_path: str, image_paths: List[str]) -> None:
+    """Merge 4 imagens para um mosaico 2x2."""
     if len(image_paths) != 4:
-        raise ValueError("Four image paths are required")
+        raise ValueError("Necessário 4 imagens")
 
     images = [Image.open(p) for p in image_paths]
     max_w = max(img.width for img in images)
@@ -22,64 +23,50 @@ def merge_images(output_path: str, image_paths: List[str]) -> None:
     mosaic.save(output_path)
 
 
-def main(page: ft.Page) -> None:
-    page.title = "Merge Images"
-    selected_images: List[str] = []
-    dropdowns: List[ft.Dropdown] = []
+def get_ponto_number(filename: str) -> str:
+    """Extrair o número do Ponto do nome do arquivo."""
+    match = re.search(r'Ponto (\d+)', filename)
+    return match.group(1) if match else None
 
-    def update_dropdowns() -> None:
-        options = [ft.dropdown.Option(key=path, text=os.path.basename(path)) for path in selected_images]
-        for i, dd in enumerate(dropdowns):
-            dd.options = options
-            dd.value = selected_images[i] if i < len(selected_images) else None
-            dd.update()
 
-    def pick_result(e: ft.FilePickerResultEvent) -> None:
-        if e.files:
-            del selected_images[:]
-            selected_images.extend([f.path for f in e.files][:4])
-            info.value = "\n".join(os.path.basename(p) for p in selected_images)
+def process_folder(folder_path: str, output_dir: str) -> None:
+    """Processar todas as imagens na pasta e criar mosaicos."""
+    # Agrupar imagens por número do Ponto
+    ponto_groups: Dict[str, List[str]] = {}
+    
+    image_files = [f for f in os.listdir(folder_path) 
+                  if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    
+    # Agrupar imagens por número do Ponto
+    for filename in image_files:
+        ponto_num = get_ponto_number(filename)
+        if ponto_num:
+            if ponto_num not in ponto_groups:
+                ponto_groups[ponto_num] = []
+            ponto_groups[ponto_num].append(os.path.join(folder_path, filename))
+    
+    # Processar cada grupo
+    for ponto_num, images in ponto_groups.items():
+        if len(images) == 4:
+            # Ordenar imagens para garantir ordem consistente
+            images.sort()
+            mosaic_path = os.path.join(output_dir, f"Ponto {ponto_num}_Mosaico.jpg")
+            try:
+                merge_images(mosaic_path, images)
+                print(f"Mosaico criado com sucesso: {mosaic_path}")
+            except Exception as e:
+                print(f"Erro ao criar mosaico para Ponto {ponto_num}: {str(e)}")
         else:
-            selected_images.clear()
-            info.value = "Nenhuma imagem selecionada"
-        info.update()
-        update_dropdowns()
+            print(f"Ponto {ponto_num} tem {len(images)} imagens (precisa de 4)")
 
-    file_picker = ft.FilePicker(on_result=pick_result)
-    page.overlay.append(file_picker)
 
-    pick_button = ft.ElevatedButton(
-        "Selecionar imagens",
-        on_click=lambda _: file_picker.pick_files(allow_multiple=True),
-    )
-    info = ft.Text("Selecione até 4 imagens.")
-
-    for i in range(4):
-        dd = ft.Dropdown(label=f"Posição {i + 1}")
-        dropdowns.append(dd)
-
-    def merge_click(e: ft.ControlEvent) -> None:
-        if len(selected_images) != 4:
-            page.dialog = ft.AlertDialog(title=ft.Text("Selecione 4 imagens primeiro"))
-            page.dialog.open = True
-            page.update()
-            return
-        ordered = [dd.value for dd in dropdowns]
-        if None in ordered or len(set(ordered)) != 4:
-            page.dialog = ft.AlertDialog(title=ft.Text("Escolha uma imagem diferente para cada posição"))
-            page.dialog.open = True
-            page.update()
-            return
-        output_path = "mosaico.jpg"
-        merge_images(output_path, ordered)
-        page.dialog = ft.AlertDialog(title=ft.Text(f"Mosaico salvo em {output_path}"))
-        page.dialog.open = True
-        page.update()
-
-    merge_button = ft.ElevatedButton("Gerar mosaico", on_click=merge_click)
-
-    page.add(pick_button, info, *dropdowns, merge_button)
+def main():
+    folder_path = r"C:\Users\lucas.melo\merge_images\prints"
+    output_dir = r"C:\Users\lucas.melo\merge_images\mosaicos"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    process_folder(folder_path, output_dir)
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    main()
