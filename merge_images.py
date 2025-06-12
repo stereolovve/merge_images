@@ -9,16 +9,22 @@ def merge_images(output_path: str, image_paths: List[str]) -> None:
     if len(image_paths) != 4:
         raise ValueError("Necessário 4 imagens")
 
+    # Tamanho da borda em pixels
+    BORDER_SIZE = 2
+
     images = [Image.open(p) for p in image_paths]
     max_w = max(img.width for img in images)
     max_h = max(img.height for img in images)
     images = [img.resize((max_w, max_h)) for img in images]
 
-    mosaic = Image.new("RGB", (max_w * 2, max_h * 2))
+    # Criar o mosaico com espaço para as bordas
+    mosaic = Image.new("RGB", (max_w * 2 + BORDER_SIZE, max_h * 2 + BORDER_SIZE), "white")
+    
+    # Colar as imagens com as bordas
     mosaic.paste(images[0], (0, 0))
-    mosaic.paste(images[1], (max_w, 0))
-    mosaic.paste(images[2], (0, max_h))
-    mosaic.paste(images[3], (max_w, max_h))
+    mosaic.paste(images[1], (max_w + BORDER_SIZE, 0))
+    mosaic.paste(images[2], (0, max_h + BORDER_SIZE))
+    mosaic.paste(images[3], (max_w + BORDER_SIZE, max_h + BORDER_SIZE))
 
     mosaic.save(output_path)
 
