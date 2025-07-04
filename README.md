@@ -1,4 +1,4 @@
-##1. Visão Geral
+## 1. Visão Geral
 O Fichas.py automatiza a criação de planilhas de “fichas de acesso” para cada ponto registrado em uma base Excel. Ele:
 
 Lê a planilha de entrada (Lista_050.xlsx).
@@ -11,7 +11,7 @@ Preenche células específicas no modelo com os dados da linha correspondente.
 
 Salva cada ficha dentro da pasta fichas/.
 
-##2. Pré-requisitos
+## 2. Pré-requisitos
 Python 3.7+
 
 Pacotes Python:
@@ -30,7 +30,7 @@ Pasta de saída:
 
 Crie uma subpasta fichas/ para receber os arquivos gerados.
 
-##3. Estrutura de Pastas
+## 3. Estrutura de Pastas
 Copy
 Edit
 seu_projeto/
