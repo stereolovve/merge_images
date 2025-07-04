@@ -69,6 +69,22 @@ for i, row in df.iterrows():
         ws["E13"].font = black_font
         ws["S13"] = row["AVALIAÇÃO ETAPA 1"]
         ws["S13"].font = black_font
+        ws["H16"] = row["VGD"]
+        ws["H16"].font = black_font
+        ws["Q16"] = row["VEÍCULO TIPO"]
+        ws["Q16"].font = black_font
+        ws["X16"] = row["TIPIFICAÇÃO (IPR728)"]
+        ws["X16"].font = black_font
+        ws["H17"] = row["DISPOSITIVOS OPERACIONAIS"]
+        ws["H17"].font = black_font
+        ws["Q17"] = row["CURVA HORIZONTAL"]
+        ws["Q17"].font = black_font
+        ws["X17"] = row["CURVA VERTICAL"]
+        ws["X17"].font = black_font
+        ws["E18"] = row["ACIDENTES (3 ANOS)"]
+        ws["E18"].font = black_font
+        ws["S18"] = row["AVALIAÇÃO ETAPA 2"]
+        ws["S18"].font = black_font
 
         wb.save(new_ficha)
         arquivos_criados += 1
